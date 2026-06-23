@@ -13,10 +13,52 @@ class ProductController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->paginate(10);
-        return view('products.index', compact('products'));
+        $query = Product::with('category');
+
+        $search = $request->get('search');
+        $minPrice = $request->get('min_price');
+        $maxPrice = $request->get('max_price');
+        $minStock = $request->get('min_stock');
+        $maxStock = $request->get('max_stock');
+
+        // Search by product name
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        // Filter price range
+        if ($minPrice !== null && $minPrice !== '') {
+            $query->where('price', '>=', $minPrice);
+        }
+
+        if ($maxPrice !== null && $maxPrice !== '') {
+            $query->where('price', '<=', $maxPrice);
+        }
+
+        // Filter stock range
+        if ($minStock !== null && $minStock !== '') {
+            $query->where('stock', '>=', $minStock);
+        }
+
+        if ($maxStock !== null && $maxStock !== '') {
+            $query->where('stock', '<=', $maxStock);
+        }
+
+        $products = $query
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('products.index', compact(
+            'products',
+            'search',
+            'minPrice',
+            'maxPrice',
+            'minStock',
+            'maxStock'
+        ));
     }
 
     public function create()

@@ -12,10 +12,39 @@ class CategoryController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::paginate(10);
-        return view('categories.index', compact('categories'));
+        $query = Category::query();
+
+        $search = $request->get('search');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+
+        // Filter by category name
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        // Filter created_at range
+        if ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        $categories = $query
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('categories.index', compact(
+            'categories',
+            'search',
+            'startDate',
+            'endDate'
+        ));
     }
 
     public function create()
@@ -48,7 +77,6 @@ class CategoryController extends Controller
             $category->delete();
             return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus');
         } catch (\Illuminate\Database\QueryException $e) {
-            // Constraint violation (Foreign Key)
             return redirect()->route('categories.index')->with('error', 'Tidak bisa menghapus kategori—ada produk yang menggunakan kategori ini. Hapus produk terlebih dahulu.');
         }
     }

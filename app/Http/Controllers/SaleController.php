@@ -13,10 +13,41 @@ class SaleController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $sales = Sale::with('user')->paginate(10);
-        return view('sales.index', compact('sales'));
+        $query = Sale::with('user');
+
+        $userName = $request->get('user_name');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+
+        // Filter by user name
+        if ($userName) {
+            $query->whereHas('user', function ($q) use ($userName) {
+                $q->where('name', 'like', '%' . $userName . '%');
+            });
+        }
+
+        // Filter sale date range
+        if ($startDate) {
+            $query->whereDate('sale_date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('sale_date', '<=', $endDate);
+        }
+
+        $sales = $query
+            ->orderBy('sale_date', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('sales.index', compact(
+            'sales',
+            'userName',
+            'startDate',
+            'endDate'
+        ));
     }
 
     public function create()
