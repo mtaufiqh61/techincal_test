@@ -80,49 +80,27 @@ Password: password
 toko-penjualan/
 
 ├── app/
-
 │   ├── Models/
-
 │   │   ├── User.php
-
 │   │   ├── Category.php
-
 │   │   ├── Product.php
-
 │   │   ├── Sale.php
-
 │   │   └── SaleItem.php
-
 │   └── Http/Controllers/
-
 │       ├── CategoryController.php
-
 │       ├── ProductController.php
-
 │       └── SaleController.php
-
 ├── database/
-
 │   ├── migrations/
-
 │   └── seeders/
-
 ├── resources/views/
-
 │   ├── layouts/
-
 │   ├── categories/
-
 │   ├── products/
-
 │   ├── sales/
-
 │   └── home.blade.php
-
 ├── routes/
-
 │   └── web.php
-
 └── README.md
 
 ---
