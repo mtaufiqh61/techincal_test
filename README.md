@@ -1,4 +1,4 @@
-# Toko Penjualan - Point of Sale Application
+# Toko Penjualan
 
 Aplikasi web berbasis Laravel untuk mengelola penjualan barang dengan fitur CRUD kategori, produk, dan transaksi penjualan.
 
